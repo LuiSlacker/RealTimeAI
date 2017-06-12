@@ -1,6 +1,6 @@
 package de.htw.lenz.gameUtils;
 
-import java.awt.Point;
+import java.util.Random;
 
 import lenz.htw.kipifub.net.NetworkClient;
 
@@ -22,12 +22,9 @@ public class Client {
     
   private void start() {
     while(true) {
-      moveBot(0, Direction.Top);
-      moveBot(1, Direction.Left);
-      moveBot(2, Direction.Bottom);
-//      networkClient.setMoveDirection(0, Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5 ? 1 : -1);
-//      networkClient.setMoveDirection(1, Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5 ? 1 : -1);
-//      networkClient.setMoveDirection(2, Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5 ? 1 : -1);
+      moveBot(0, Direction.getRandom());
+      moveBot(1, Direction.getRandom());
+      moveBot(2, Direction.getRandom());
     }
   }
   

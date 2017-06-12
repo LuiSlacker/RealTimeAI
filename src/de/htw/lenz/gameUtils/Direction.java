@@ -1,6 +1,7 @@
 package de.htw.lenz.gameUtils;
 
 import java.awt.Point;
+import java.util.Random;
 
 public enum Direction {
   Top(new Point(0,-1)),
@@ -13,6 +14,7 @@ public enum Direction {
   TopLeft(new Point(-1,1));
   
   private Point value;
+  private static final Random RANDOM = new Random();
 
   private Direction(Point p) {
     this.value = p;
@@ -20,5 +22,9 @@ public enum Direction {
   
   public Point getValue() {
     return value;
+  }
+  
+  public static Direction getRandom() {
+    return Direction.values()[RANDOM.nextInt(Direction.values().length)];
   }
 }

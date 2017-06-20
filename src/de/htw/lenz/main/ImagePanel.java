@@ -7,7 +7,7 @@ import java.awt.image.WritableRaster;
 
 import javax.swing.JPanel;
 
-public class VisualizePath extends JPanel{
+public class ImagePanel extends JPanel{
   
   private static final long serialVersionUID = 1L;
   private static final int WIDTH = 1096;
@@ -15,7 +15,7 @@ public class VisualizePath extends JPanel{
   
   private int[][][] pixels;
   
-  public VisualizePath(int[][][] pixels) {
+  public ImagePanel(int[][][] pixels) {
     this.pixels = pixels;
     setPreferredSize(new Dimension(WIDTH * 2, HEIGHT * 2));
   }

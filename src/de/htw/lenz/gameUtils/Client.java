@@ -5,7 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
-import de.htw.lenz.main.VisualizePath;
+import de.htw.lenz.main.ImagePanel;
 import lenz.htw.kipifub.ColorChange;
 import lenz.htw.kipifub.net.NetworkClient;
 
@@ -39,7 +39,7 @@ public class Client{
       f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       JFrame.setDefaultLookAndFeelDecorated(true);
       f.setResizable(false);
-      VisualizePath vP = new VisualizePath(pixels);
+      ImagePanel vP = new ImagePanel(pixels);
       f.add(vP, BorderLayout.CENTER);
       f.pack();
       f.setVisible(true);

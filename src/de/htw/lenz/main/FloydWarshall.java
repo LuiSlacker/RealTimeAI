@@ -1,12 +1,13 @@
 package de.htw.lenz.main;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class FloydWarshall {
   
-  private static int INF = 9; // Integer.MAX_VALUE;
+  private static int INF = 9999;
   
   private int[][] adjacencyMatrix;
   private int[][] next;
@@ -14,12 +15,10 @@ public class FloydWarshall {
   
   
   public FloydWarshall(List<Point> vertices) {
+    System.out.println(vertices);
     this.n = vertices.size();
     init(vertices);
     Utils.printArray2D(adjacencyMatrix);
-    System.out.println();
-    
-    Utils.printArray2D(next);
     System.out.println();
   }
   
@@ -38,22 +37,27 @@ public class FloydWarshall {
     }
     Utils.printArray2D(next);
     System.out.println();
+    
+    System.out.println(reconstructPath(3, 5));System.out.println();
     return distances;
   }
   
-//  private List<Point> reconstructPath(Point start, Point end) {
-//    if next[][]
-//    return null;
-//  }
-//  
-//  procedure Path(u, v)
-//  if next[u][v] = null then
-//      return []
-//  path = [u]
-//  while u ≠ v
-//      u ← next[u][v]
-//      path.append(u)
-//  return path
+  /**
+   * reconstruct the shortest path from vertex u to v
+   * @param u starting vertex
+   * @param v target vertex
+   * @return the shortest path from u to v
+   */
+  private List<Integer> reconstructPath(int u, int v) {
+    List<Integer> path = new ArrayList<>();
+    if (next[u][v] == INF) return path;
+    path.add(u);
+    while(u != v) {
+      u = next[u][v];
+      path.add(u);
+    }
+    return path;
+  }
   
   /**
    * generates the adjacency matrix 
@@ -63,13 +67,13 @@ public class FloydWarshall {
     initializePointerMatrix();
     setEdgesForAdjacencyAndPointerMatrix(vertices);
     
-    Utils.updateRestOfSymmetricalMatrix(adjacencyMatrix);
-    Utils.updateRestOfSymmetricalMatrix(next);
+//    Utils.updateRestOfSymmetricalMatrix(adjacencyMatrix);
+//    Utils.updateRestOfSymmetricalMatrix(next);
   }
   
   private void setEdgesForAdjacencyAndPointerMatrix(List<Point> vertices) {
-    for (int i = 1; i < n; i++) {
-      for (int j = 0; j < i; j++) {
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
         if (isNeighbour(vertices.get(i), vertices.get(j))) {
          adjacencyMatrix[i][j] = 1; 
          next[i][j] = j;
@@ -103,6 +107,6 @@ public class FloydWarshall {
    * Checks whether two pixels are neighbors (8er kernel)
    */
   private boolean isNeighbour(Point a, Point b) {
-    return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1;
+    return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && !a.equals(b);
   }
 }

@@ -10,8 +10,10 @@ import javax.swing.JPanel;
 public class ImagePanel extends JPanel{
   
   private static final long serialVersionUID = 1L;
-  private static final int WIDTH = 1096;
-  private static final int HEIGHT = 1024;
+//  private static final int WIDTH = 1096;
+//  private static final int HEIGHT = 1024;
+  private static final int WIDTH = 255;
+  private static final int HEIGHT = 255;
   
   private int[][][] pixels;
   

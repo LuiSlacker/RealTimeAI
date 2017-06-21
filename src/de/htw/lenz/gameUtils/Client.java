@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 
 import de.htw.lenz.main.FloydWarshall;
 import de.htw.lenz.main.ImagePanel;
+import de.htw.lenz.main.Utils;
 import lenz.htw.kipifub.ColorChange;
 import lenz.htw.kipifub.net.NetworkClient;
 
@@ -31,15 +32,11 @@ public class Client{
     try {
 //      networkClient = new NetworkClient(host, name);
 //      player = networkClient.getMyPlayerNumber();
-//      System.out.println(player);
 //      generateImage();
       List<Point> vertices = getVertices();
-      int[][] matrix = generateAdjacencyMatrix(vertices);
-      printArray2D(matrix);
+      FloydWarshall floydWarshall = new FloydWarshall(vertices);
+      Utils.printArray2D(floydWarshall.allPairsShortestPath());
       
-      System.out.println();
-      int[][] allpairShortestPath = FloydWarshall.allPairShortestPath(matrix);
-      printArray2D(allpairShortestPath);
 //      drawImage();
 //      start();
     } catch (Exception e) {
@@ -92,51 +89,6 @@ public class Client{
       }
     }
     return vertices;
-  }
-  
-  private int[][] generateAdjacencyMatrix(List<Point> vertices) {
-    int n = WIDTH * HEIGHT;
-    int[][] matrix = initializeAdjacencyMatrix(n);
-    for (int i = 1; i < n; i++) {
-      for (int j = 0; j < i; j++) {
-        if (isNeighbour(vertices.get(i), vertices.get(j))) {
-         matrix[i][j] = 1; 
-        }
-      }
-    }
-    return updateRestOfSymmetricalMatrix(matrix);
-  }
-  
-  private int[][] initializeAdjacencyMatrix(int n) {
-    int[][] matrix = new int[n][n];
-    for (int y = 0; y < n; y++) {
-      for (int x = 0; x < n; x++) {
-        if (x != y) matrix[x][y] = 4; // TODO Integer.MAX_VALUE
-      }
-    }
-    return matrix;
-  }
-  
-  private int[][] updateRestOfSymmetricalMatrix(int[][] matrix) {
-    for (int i = 0; i < matrix.length; i++) {
-      for (int j = i+1; j < matrix[i].length; j++) {
-        matrix[i][j] = matrix[j][i];
-      }
-    }
-    return matrix;
-  }
-  
-  private synchronized void printArray2D(int[][] array) {
-    for (int i = 0; i < array.length; i++) {
-      for (int j = 0; j < array[i].length; j++) {
-        System.out.print(array[i][j]);
-      }
-      System.out.println();
-    }
-  }
-  
-  private boolean isNeighbour(Point a, Point b) {
-    return Math.abs(a.x -b.x) <= 1 && Math.abs(a.y -b.y) <= 1;
   }
   
   private boolean isWalkable(int x, int y) {

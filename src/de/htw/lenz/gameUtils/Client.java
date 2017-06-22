@@ -84,9 +84,7 @@ public class Client{
     for (int y = 0; y < HEIGHT; y++) {
       for (int x = 0; x < WIDTH; x++) {
         //if (networkClient.getBoard(x, y) == WHITE) {
-          if(x % 2 == 0) {
-            vertices.add(new Point(x, y));
-          }
+          vertices.add(new Point(x, y));
         //}
       }
     }

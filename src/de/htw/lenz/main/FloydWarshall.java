@@ -38,7 +38,7 @@ public class FloydWarshall {
     Utils.printArray2D(next);
     System.out.println();
     
-    System.out.println(reconstructPath(3, 5));System.out.println();
+    System.out.println(reconstructPath(7, 2));System.out.println();
     return distances;
   }
   
@@ -66,9 +66,6 @@ public class FloydWarshall {
     initializeAdjacencyMatrix();
     initializePointerMatrix();
     setEdgesForAdjacencyAndPointerMatrix(vertices);
-    
-//    Utils.updateRestOfSymmetricalMatrix(adjacencyMatrix);
-//    Utils.updateRestOfSymmetricalMatrix(next);
   }
   
   private void setEdgesForAdjacencyAndPointerMatrix(List<Point> vertices) {

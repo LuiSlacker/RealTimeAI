@@ -7,9 +7,9 @@ import java.util.List;
 
 public class FloydWarshall {
   
-  private static int INF = 9999;
+  private static int INF = 9;
   
-  private int[][] adjacencyMatrix;
+  private double[][] adjacencyMatrix;
   private int[][] next;
   private int n;
   
@@ -22,8 +22,8 @@ public class FloydWarshall {
     System.out.println();
   }
   
-  public int[][] allPairsShortestPath() {
-    int[][] distances = Arrays.copyOf(adjacencyMatrix, n);
+  public double[][] allPairsShortestPath() {
+    double[][] distances = Arrays.copyOf(adjacencyMatrix, n);
     
     for (int k = 0; k < n; k++) {
       for (int i = 0; i < n; i++) {
@@ -35,10 +35,10 @@ public class FloydWarshall {
         }
       }
     }
-    Utils.printArray2D(next);
+    Utils.printIntArray2D(next);
     System.out.println();
     
-    System.out.println(reconstructPath(7, 2));System.out.println();
+    System.out.println(reconstructPath(1, 8));System.out.println();
     return distances;
   }
   
@@ -72,8 +72,8 @@ public class FloydWarshall {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         if (isNeighbour(vertices.get(i), vertices.get(j))) {
-         adjacencyMatrix[i][j] = 1; 
-         next[i][j] = j;
+          next[i][j] = j;
+          adjacencyMatrix[i][j] = isDirectNeighbour(vertices.get(i), vertices.get(j)) ? 1 : Math.sqrt(2);
         }
       }
     }
@@ -83,7 +83,7 @@ public class FloydWarshall {
    *  initializes an empty adjacency matrix (diagonal: 0, rest Integer.MAX_VALUE) 
    */
   private void initializeAdjacencyMatrix() {
-    adjacencyMatrix = new int[n][n];
+    adjacencyMatrix = new double[n][n];
     for (int y = 0; y < n; y++) {
       for (int x = 0; x < n; x++) {
         if (x != y) adjacencyMatrix[x][y] = INF;
@@ -106,4 +106,9 @@ public class FloydWarshall {
   private boolean isNeighbour(Point a, Point b) {
     return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && !a.equals(b);
   }
+  
+  private boolean isDirectNeighbour(Point a, Point b) {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) == 1;
+  }
+  
 }

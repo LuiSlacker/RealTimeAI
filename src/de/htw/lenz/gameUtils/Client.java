@@ -30,24 +30,21 @@ public class Client{
 
   public Client(String name, String host) {
     try {
-      //networkClient = new NetworkClient(host, name);
-//      player = networkClient.getMyPlayerNumber();
+      networkClient = new NetworkClient(host, name);
+      player = networkClient.getMyPlayerNumber();
 //      generateImage();
 //      List<Point> vertices = getVertices();
 //      FloydWarshall floydWarshall = new FloydWarshall(vertices);
 //      Utils.printArray2D(floydWarshall.allPairsShortestPath());
       
-      boolean[] grid = new boolean[16];// generateGrid();
-      Arrays.fill(grid, Boolean.TRUE);
-      grid[6] = false;
-      grid[10] = false;
-      grid[14] = false;
-      
-      FloydWarshall floydWarshall = new FloydWarshall(grid, 4); //WIDTH / GRID_KERNEL_LENGTH);
-      Utils.printArray2D(floydWarshall.allPairsShortestPath());
+//      boolean[] grid = new boolean[16];// generateGrid();
+//      Arrays.fill(grid, Boolean.TRUE);
+//      
+//      FloydWarshall floydWarshall = new FloydWarshall(grid, 4); //WIDTH / GRID_KERNEL_LENGTH);
+//      Utils.printArray2D(floydWarshall.allPairsShortestPath());
       
 //      drawImage();
-//      start();
+      start();
     } catch (Exception e) {
      throw new RuntimeException("", e);
     }
@@ -84,7 +81,7 @@ public class Client{
     while(true) {
       moveBot(0, Direction.getRandom());
       moveBot(1, Direction.getRandom());
-      moveBot(2, Direction.getRandom());
+      moveBotToTarget(new Point(700, 800));
     }
   }
   
@@ -134,6 +131,12 @@ public class Client{
   
   private void moveBot(int bot, Direction direction) {
     networkClient.setMoveDirection(bot, direction.getValue().x, direction.getValue().y);
+  }
+  
+  private void moveBotToTarget(int bot, Point target) {
+    networkClient.setMoveDirection(bot,
+                                  networkClient.pullNextColorChange().x - target.x,
+                                  networkClient.pullNextColorChange().y -target.y);
   }
   
   private void listenForColorChange() {

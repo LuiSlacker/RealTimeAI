@@ -20,9 +20,9 @@ public class Client{
   private static final int BLACK = 0;
   private static final int WHITE = 0xFFFFFF;
   private NetworkClient networkClient;
-  private static int WIDTH = 1024;
-  private static int HEIGHT = 1024;
-  private static int GRID_KERNEL_LENGTH = 32;
+  private static int WIDTH = 8;
+  private static int HEIGHT = 8;
+  private static int GRID_KERNEL_LENGTH = 2;
   
   private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
@@ -30,16 +30,21 @@ public class Client{
 
   public Client(String name, String host) {
     try {
-      networkClient = new NetworkClient(host, name);
-      player = networkClient.getMyPlayerNumber();
+      //networkClient = new NetworkClient(host, name);
+//      player = networkClient.getMyPlayerNumber();
 //      generateImage();
 //      List<Point> vertices = getVertices();
 //      FloydWarshall floydWarshall = new FloydWarshall(vertices);
 //      Utils.printArray2D(floydWarshall.allPairsShortestPath());
       
-      boolean[] grid = generateGrid();
+      boolean[] grid = new boolean[16];// generateGrid();
+      Arrays.fill(grid, Boolean.TRUE);
+      grid[6] = false;
+      grid[10] = false;
+      grid[14] = false;
       
-      System.out.println("Done!");
+      FloydWarshall floydWarshall = new FloydWarshall(grid, 4); //WIDTH / GRID_KERNEL_LENGTH);
+      Utils.printArray2D(floydWarshall.allPairsShortestPath());
       
 //      drawImage();
 //      start();

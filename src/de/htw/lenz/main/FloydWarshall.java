@@ -7,17 +7,22 @@ import java.util.List;
 
 public class FloydWarshall {
   
-  private static int INF = 9;
+  private static int INF = Integer.MAX_VALUE;
   
   private double[][] adjacencyMatrix;
   private int[][] next;
   private int n;
+  private int verticesPerRow;
+
+  private boolean[] vertices;
   
   
-  public FloydWarshall(List<Point> vertices) {
-    System.out.println(vertices);
-    this.n = vertices.size();
-    init(vertices);
+  public FloydWarshall(boolean[] vertices, int verticesPerRow) {
+    Utils.printBooleanGrid(vertices, 4);
+    this.vertices = vertices;
+    this.n = vertices.length;
+    this.verticesPerRow = verticesPerRow;
+    init();
     Utils.printArray2D(adjacencyMatrix);
     System.out.println();
   }
@@ -35,10 +40,10 @@ public class FloydWarshall {
         }
       }
     }
-    Utils.printIntArray2D(next);
+    //Utils.printIntArray2D(next);
     System.out.println();
     
-    System.out.println(reconstructPath(1, 7));System.out.println();
+    System.out.println(reconstructPath(12, 15));System.out.println();
     return distances;
   }
   
@@ -62,21 +67,36 @@ public class FloydWarshall {
   /**
    * generates the adjacency matrix 
    */
-  private void init(List<Point> vertices) {
+  private void init() {
     initializeAdjacencyMatrix();
     initializePointerMatrix();
-    setEdgesForAdjacencyAndPointerMatrix(vertices);
+    setEdgesForAdjacencyAndPointerMatrix();
   }
   
-  private void setEdgesForAdjacencyAndPointerMatrix(List<Point> vertices) {
+  private void setEdgesForAdjacencyAndPointerMatrix() {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        if (isNeighbour(vertices.get(i), vertices.get(j))) {
+        if (isNeighbor(i, j)) {
           next[i][j] = j;
-          adjacencyMatrix[i][j] = isDirectNeighbour(vertices.get(i), vertices.get(j)) ? 1 : Math.sqrt(2);
-          }
+          adjacencyMatrix[i][j] = 1;
+        }
       }
     }
+  }
+  
+  /**
+   * checks if two vertices are neighbors (4er neighborhood) 
+   */
+  private boolean isNeighbor(int a, int b) {
+    boolean walkable = vertices[a] && vertices[b]; 
+    return walkable && (isInSameRow(a, b) && Math.abs(a-b) == 1 || Math.abs(a-b) == verticesPerRow);
+  }
+  
+  /**
+   * Indicates whether vertex is within same row of the grid
+   */
+  private boolean isInSameRow(int a, int b) {
+    return (a / verticesPerRow) == (b / verticesPerRow);
   }
   
   /**

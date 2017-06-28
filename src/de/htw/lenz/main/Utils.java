@@ -24,9 +24,11 @@ public class Utils {
   
   public static void printBooleanGrid(boolean[] array, int width) {
     for (int i = 0; i < array.length; i++) {
+      if (i % width == 0) System.out.println();
         System.out.printf(" %s ", array[i]);
-        if (i % width == 0) System.out.println();
     }
+    System.out.println();
+    System.out.println();
   }
   
   /**

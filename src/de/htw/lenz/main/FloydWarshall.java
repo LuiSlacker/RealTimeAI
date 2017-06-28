@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FloydWarshall {
   
-  private static int INF = Integer.MAX_VALUE;
+  private static int INF = 999;//Integer.MAX_VALUE;
   
   private double[][] adjacencyMatrix;
   private int[][] next;
@@ -18,12 +18,11 @@ public class FloydWarshall {
   
   
   public FloydWarshall(boolean[] vertices, int verticesPerRow) {
-    Utils.printBooleanGrid(vertices, 4);
     this.vertices = vertices;
     this.n = vertices.length;
     this.verticesPerRow = verticesPerRow;
     init();
-    Utils.printArray2D(adjacencyMatrix);
+//    Utils.printArray2D(adjacencyMatrix);
     System.out.println();
   }
   
@@ -41,9 +40,9 @@ public class FloydWarshall {
       }
     }
     //Utils.printIntArray2D(next);
-    System.out.println();
+//    System.out.println();
     
-    System.out.println(reconstructPath(12, 15));System.out.println();
+    System.out.println(reconstructPath(24, 231));System.out.println();
     return distances;
   }
   

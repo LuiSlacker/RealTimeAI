@@ -20,9 +20,10 @@ public class Client{
   private static final int BLACK = 0;
   private static final int WHITE = 0xFFFFFF;
   private NetworkClient networkClient;
-  private static int WIDTH = 8;
-  private static int HEIGHT = 8;
-  private static int GRID_KERNEL_LENGTH = 2;
+  private static int WIDTH = 1024;
+  private static int HEIGHT = 1024;
+  private static int GRID_KERNEL_LENGTH = 64;
+  private static int GRID_WIDTH = WIDTH / GRID_KERNEL_LENGTH;
   
   private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
@@ -33,15 +34,12 @@ public class Client{
       networkClient = new NetworkClient(host, name);
       player = networkClient.getMyPlayerNumber();
 //      generateImage();
-//      List<Point> vertices = getVertices();
-//      FloydWarshall floydWarshall = new FloydWarshall(vertices);
-//      Utils.printArray2D(floydWarshall.allPairsShortestPath());
       
-//      boolean[] grid = new boolean[16];// generateGrid();
-//      Arrays.fill(grid, Boolean.TRUE);
+      boolean[] grid = generateGrid();
+      Utils.printBooleanGrid(grid, GRID_WIDTH);
 //      
-//      FloydWarshall floydWarshall = new FloydWarshall(grid, 4); //WIDTH / GRID_KERNEL_LENGTH);
-//      Utils.printArray2D(floydWarshall.allPairsShortestPath());
+      FloydWarshall floydWarshall = new FloydWarshall(grid, GRID_WIDTH);
+      floydWarshall.allPairsShortestPath();
       
 //      drawImage();
       start();
@@ -79,22 +77,11 @@ public class Client{
     
   private void start() {
     while(true) {
+      listenForColorChange();
       moveBot(0, Direction.getRandom());
       moveBot(1, Direction.getRandom());
-      moveBotToTarget(new Point(700, 800));
+      moveBot(2, Direction.getRandom());
     }
-  }
-  
-  private List<Point> getVertices() {
-    List<Point> vertices = new ArrayList<>();
-    for (int y = 0; y < HEIGHT; y++) {
-      for (int x = 0; x < WIDTH; x++) {
-        if (!(x == 1 && y == 1)) {
-          vertices.add(new Point(x, y));
-        }
-      }
-    }
-    return vertices;
   }
   
   /**
@@ -102,7 +89,7 @@ public class Client{
    * Each grid cell's booleans indicates whether one of the containing pixels is not walkable 
    */
   private boolean[] generateGrid() {
-    int gridLength = WIDTH * HEIGHT / GRID_KERNEL_LENGTH * GRID_KERNEL_LENGTH;
+    int gridLength = (int) Math.pow(WIDTH / GRID_KERNEL_LENGTH, 2);
     boolean[] grid = new boolean[gridLength];
     Arrays.fill(grid, Boolean.TRUE);
     for (int y = 0; y < HEIGHT; y++) {
@@ -114,11 +101,13 @@ public class Client{
     return grid;
   }
   
+  /**
+   * Maps pixelCoordinates to gridIndex
+   */
   private int mapCordinatesToGridIndex(int x, int y) {
-    int pos = y * WIDTH + x;
-    int gridSubstract = ((y + 1) / 2) * WIDTH * (-1);
-    int gridIndex = (pos - gridSubstract) / GRID_KERNEL_LENGTH;
-    return gridIndex;
+    int gridX = x / GRID_KERNEL_LENGTH;
+    int gridY = y / GRID_KERNEL_LENGTH;
+    return gridY * GRID_WIDTH + gridX;
   }
   
   private boolean isWalkable(int x, int y) {
@@ -133,17 +122,10 @@ public class Client{
     networkClient.setMoveDirection(bot, direction.getValue().x, direction.getValue().y);
   }
   
-  private void moveBotToTarget(int bot, Point target) {
-    networkClient.setMoveDirection(bot,
-                                  networkClient.pullNextColorChange().x - target.x,
-                                  networkClient.pullNextColorChange().y -target.y);
-  }
-  
   private void listenForColorChange() {
     ColorChange colorChange;
     while ((colorChange = networkClient.pullNextColorChange()) != null) {
-      // Verarbeitung von colorChange
-      // colorChange.player, colorChange.bot, colorChange.x, colorChange.y
+      System.out.println("ColorChange");
     }
   }
   

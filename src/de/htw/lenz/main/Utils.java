@@ -1,5 +1,7 @@
 package de.htw.lenz.main;
 
+import javax.sound.midi.Synthesizer;
+
 public class Utils {
 
   public static void printArray2D(double[][] array) {
@@ -17,6 +19,13 @@ public class Utils {
         System.out.print(array[i][j]);
       }
       System.out.println();
+    }
+  }
+  
+  public static void printBooleanGrid(boolean[] array, int width) {
+    for (int i = 0; i < array.length; i++) {
+        System.out.printf(" %s ", array[i]);
+        if (i % width == 0) System.out.println();
     }
   }
   

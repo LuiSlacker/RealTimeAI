@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -19,10 +20,9 @@ public class Client{
   private static final int BLACK = 0;
   private static final int WHITE = 0xFFFFFF;
   private NetworkClient networkClient;
-//  private int WIDTH = 1096;
-//  private int HEIGHT = 1024;
-  private int WIDTH = 3;
-  private int HEIGHT = 3;
+  private static int WIDTH = 1024;
+  private static int HEIGHT = 1024;
+  private static int GRID_KERNEL_LENGTH = 32;
   
   private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
@@ -30,12 +30,16 @@ public class Client{
 
   public Client(String name, String host) {
     try {
-//      networkClient = new NetworkClient(host, name);
-//      player = networkClient.getMyPlayerNumber();
+      networkClient = new NetworkClient(host, name);
+      player = networkClient.getMyPlayerNumber();
 //      generateImage();
-      List<Point> vertices = getVertices();
-      FloydWarshall floydWarshall = new FloydWarshall(vertices);
-      Utils.printArray2D(floydWarshall.allPairsShortestPath());
+//      List<Point> vertices = getVertices();
+//      FloydWarshall floydWarshall = new FloydWarshall(vertices);
+//      Utils.printArray2D(floydWarshall.allPairsShortestPath());
+      
+      boolean[] grid = generateGrid();
+      
+      System.out.println("Done!");
       
 //      drawImage();
 //      start();
@@ -83,12 +87,36 @@ public class Client{
     List<Point> vertices = new ArrayList<>();
     for (int y = 0; y < HEIGHT; y++) {
       for (int x = 0; x < WIDTH; x++) {
-        //if (networkClient.getBoard(x, y) == WHITE) {
+        if (!(x == 1 && y == 1)) {
           vertices.add(new Point(x, y));
-        //}
+        }
       }
     }
     return vertices;
+  }
+  
+  /**
+   * Generates a grid of the pitch
+   * Each grid cell's booleans indicates whether one of the containing pixels is not walkable 
+   */
+  private boolean[] generateGrid() {
+    int gridLength = WIDTH * HEIGHT / GRID_KERNEL_LENGTH * GRID_KERNEL_LENGTH;
+    boolean[] grid = new boolean[gridLength];
+    Arrays.fill(grid, Boolean.TRUE);
+    for (int y = 0; y < HEIGHT; y++) {
+      for (int x = 0; x < WIDTH; x++) {
+        int gridIndex = mapCordinatesToGridIndex(x, y);
+        if (!isWalkable(x, y)) grid[gridIndex] = false;
+      }
+    }
+    return grid;
+  }
+  
+  private int mapCordinatesToGridIndex(int x, int y) {
+    int pos = y * WIDTH + x;
+    int gridSubstract = ((y + 1) / 2) * WIDTH * (-1);
+    int gridIndex = (pos - gridSubstract) / GRID_KERNEL_LENGTH;
+    return gridIndex;
   }
   
   private boolean isWalkable(int x, int y) {

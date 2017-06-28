@@ -38,7 +38,7 @@ public class FloydWarshall {
     Utils.printIntArray2D(next);
     System.out.println();
     
-    System.out.println(reconstructPath(1, 8));System.out.println();
+    System.out.println(reconstructPath(1, 7));System.out.println();
     return distances;
   }
   
@@ -74,7 +74,7 @@ public class FloydWarshall {
         if (isNeighbour(vertices.get(i), vertices.get(j))) {
           next[i][j] = j;
           adjacencyMatrix[i][j] = isDirectNeighbour(vertices.get(i), vertices.get(j)) ? 1 : Math.sqrt(2);
-        }
+          }
       }
     }
   }

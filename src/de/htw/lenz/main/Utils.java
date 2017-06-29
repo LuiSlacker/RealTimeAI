@@ -1,6 +1,6 @@
 package de.htw.lenz.main;
 
-import javax.sound.midi.Synthesizer;
+import de.htw.lenz.gameUtils.ColorGridCell;
 
 public class Utils {
 
@@ -17,6 +17,16 @@ public class Utils {
     for (int i = 0; i < array.length; i++) {
       for (int j = 0; j < array[i].length; j++) {
         System.out.print(array[i][j]);
+      }
+      System.out.println();
+    }
+  }
+  
+  public static void printColorGrid(ColorGridCell[][] colorGrid) {
+    System.out.println();System.out.println();
+    for (int j = 0; j < colorGrid.length; j++) {
+      for (int i = 0; i < colorGrid[j].length; i++) {
+        System.out.printf(" %s ", colorGrid[i][j].getColorValue());
       }
       System.out.println();
     }

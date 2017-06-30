@@ -1,17 +1,10 @@
 package de.htw.lenz.gameUtils;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.JFrame;
-
 import de.htw.lenz.main.FloydWarshall;
-import de.htw.lenz.main.ImagePanel;
-import de.htw.lenz.main.Utils;
 import lenz.htw.kipifub.ColorChange;
 import lenz.htw.kipifub.net.NetworkClient;
 
@@ -22,7 +15,7 @@ public class Client{
   private NetworkClient networkClient;
   private static int WIDTH = 1024;
   private static int HEIGHT = 1024;
-  private static int GRID_KERNEL_LENGTH = 128;
+  private static int GRID_KERNEL_LENGTH = 32;
   private static int GRID_WIDTH = WIDTH / GRID_KERNEL_LENGTH;
 
   private FloydWarshall floydWarshall;
@@ -40,6 +33,7 @@ public class Client{
       
       boolean[] grid = generateGrid();
       floydWarshall = new FloydWarshall(grid, GRID_WIDTH);
+      
       colorGrid = new ColorGrid(networkClient, player, GRID_KERNEL_LENGTH, GRID_WIDTH);
       
       positionBot0 = new Point(-1, -1);
@@ -56,12 +50,12 @@ public class Client{
     triggerInitialBotsMove();
     while(true) {
       listenForColorChange();
-//      int mostInterestingColorGridCell = colorGrid.getMostInterestingColorGridCell();
-      int mostInterestingColorGridCell = 55;
+      int mostInterestingColorGridCell = colorGrid.getMostInterestingColorGridCell();
+//      int mostInterestingColorGridCell = 110;
       if (player == 0) {
 //        System.out.println("interstingCell: " + mostInterestingColorGridCell);
         travelToCell(1, positionBot1, mostInterestingColorGridCell);
-        System.out.println("player0" + positionBot1);
+//        System.out.println("player0" + positionBot1);
       }
     }
   }
@@ -84,11 +78,9 @@ public class Client{
   }
   
   private void updateMyBotPosition(ColorChange colorChange) {
-//    System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++");
     if (colorChange.player == player) {
       switch (colorChange.bot) {
       case 0:
-//        System.out.println("_-----------------------------------------_");
         positionBot0.x = colorChange.x;
         positionBot0.y = colorChange.y;
         break;
@@ -108,9 +100,9 @@ public class Client{
   
   private void travelToCell(int bot, Point currentPosition,  int targetVertex) {
     int gridIndex = mapCordinatesToGridIndex(currentPosition.x, currentPosition.y);
-    System.out.printf("bot: %s,       -        grid index: %s", bot, gridIndex);System.out.println();
+//    System.out.printf("bot: %s,       -        grid index: %s", bot, gridIndex);System.out.println();
     List<Integer> path = floydWarshall.reconstructPath(gridIndex, targetVertex);
-    System.out.println("path" + path);
+    System.out.printf("travelling from %s to %s via %s", gridIndex, targetVertex, path);System.out.println();
     if (path.size() > 1) {
 //      System.out.printf("travelling along: %S", path);System.out.println();
       Direction nextDirection = getDirectionforSuccessiveVertex(path.get(0), path.get(1));
@@ -123,10 +115,10 @@ public class Client{
     //TODO change hardcoded Top, Bottom width
     Direction result = null;
     switch (a-b) {
-    case -8:
+    case -32:
       result = Direction.Bottom;
       break;
-    case 8:
+    case 32:
       result = Direction.Top;
       break;
     case -1:
@@ -205,3 +197,19 @@ public class Client{
 //  }
   
 }
+
+
+//final class BotScheduler implements Runnable {
+//  
+//  private NetworkClient networkClient;
+//  
+//  public BotScheduler(NetworkClient networkClient) {
+//    this.networkClient = networkClient;
+//  }
+//  
+//  @Override
+//  public void run() {
+//    new Client(this.clientName);
+//  }
+//  
+//}

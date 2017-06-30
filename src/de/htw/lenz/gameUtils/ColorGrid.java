@@ -18,7 +18,7 @@ public class ColorGrid {
     this.gridWidth = gridWidth;
     colorGrid = new ColorGridCell[gridWidth][gridWidth];
     initializeGrid();
-    Utils.printColorGrid(colorGrid);;
+//    Utils.printColorGrid(colorGrid);;
   }
 
   private void initializeGrid() {
@@ -34,7 +34,7 @@ public class ColorGrid {
     int maxValue = Integer.MIN_VALUE; 
     for (int j = 0; j < colorGrid.length; j++) {
       for (int i = 0; i < colorGrid.length; i++) {
-        if (colorGrid[i][j].getColorValue() > maxValue) {
+        if (colorGrid[i][j].getColorValue() > maxValue && isSurroundedByBlankCells(i, j)) {
           maxValue = colorGrid[i][j].getColorValue();
           mostInterstingCell = j * gridWidth + i;
         }
@@ -42,6 +42,14 @@ public class ColorGrid {
       }
     }
     return mostInterstingCell;
+  }
+  
+  public boolean isSurroundedByBlankCells(int x, int y) {
+    if (x < 1 || y < 1) return false;
+    return colorGrid[x-1][y].getColorValue() == 261120
+        && colorGrid[x+1][y].getColorValue() == 261120
+        && colorGrid[x][y-1].getColorValue() == 261120
+        && colorGrid[x][y+1].getColorValue() == 261120;
   }
   
   public int getRandomCell() {

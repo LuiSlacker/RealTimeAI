@@ -35,7 +35,6 @@ public class ColorGridCell {
         }
       }
     }
-    System.out.println(System.currentTimeMillis() - start);
   }
   
   private int extractColorValue(int color) {

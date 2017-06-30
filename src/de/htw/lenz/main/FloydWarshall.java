@@ -6,7 +6,7 @@ import java.util.List;
 
 public class FloydWarshall {
   
-  private static int INF = Integer.MAX_VALUE;
+  private static int INF = 5000;//Integer.MAX_VALUE;
   
   private double[][] adjacencyMatrix;
   private double[][] distances;
@@ -22,7 +22,7 @@ public class FloydWarshall {
     this.verticesPerRow = verticesPerRow;
     init();
     allPairsShortestPath();
-    System.out.println();
+    System.out.println("Done");
   }
   
   /**

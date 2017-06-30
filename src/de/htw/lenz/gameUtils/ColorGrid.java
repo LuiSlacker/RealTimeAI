@@ -1,7 +1,5 @@
 package de.htw.lenz.gameUtils;
 
-import java.util.List;
-
 import de.htw.lenz.main.Utils;
 import lenz.htw.kipifub.net.NetworkClient;
 
@@ -44,6 +42,16 @@ public class ColorGrid {
       }
     }
     return mostInterstingCell;
+  }
+  
+  public int getRandomCell() {
+    int x = (int) (Math.random() * gridWidth);
+    int y = (int) (Math.random() * gridWidth);
+    while(colorGrid[x][y].getColorValue() == 0) {
+      x = (int) (Math.random() * gridWidth);
+      y = (int) (Math.random() * gridWidth);
+    }
+    return y * gridWidth + x;
   }
   
 

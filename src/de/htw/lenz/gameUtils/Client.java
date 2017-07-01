@@ -10,8 +10,6 @@ import lenz.htw.kipifub.net.NetworkClient;
 
 public class Client{
 
-  private static final int BLACK = 0;
-  private static final int WHITE = 0xFFFFFF;
   private NetworkClient networkClient;
   private static int WIDTH = 1024;
   private static int HEIGHT = 1024;
@@ -21,9 +19,9 @@ public class Client{
   private FloydWarshall floydWarshall;
   private ColorGrid colorGrid;
   private int player;
-  private Point positionBot0;
-  private Point positionBot1;
-  private Point positionBot2;
+  static private volatile Coordinate positionBot0;
+  static private volatile Coordinate positionBot1;
+  static private volatile Coordinate positionBot2;
 //  private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
   public Client(String name, String host) {
@@ -36,9 +34,9 @@ public class Client{
       
       colorGrid = new ColorGrid(networkClient, player, GRID_KERNEL_LENGTH, GRID_WIDTH);
       
-      positionBot0 = new Point(-1, -1);
-      positionBot1 = new Point(-1, -1);
-      positionBot2 = new Point(-1, -1);
+      positionBot0 = new Coordinate(-1, -1);
+      positionBot1 = new Coordinate(-1, -1);
+      positionBot2 = new Coordinate(-1, -1);
       
       start();
     } catch (Exception e) {
@@ -48,22 +46,20 @@ public class Client{
   
   private void start() {
     triggerInitialBotsMove();
+    if (player == 0) {
+      Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
+      bot1.start();
+    }
     while(true) {
+//      System.out.println("Listening");
       listenForColorChange();
-      int mostInterestingColorGridCell = colorGrid.getRandomCell();
-//      int mostInterestingColorGridCell = 110;
-      if (player == 0) {
-//        System.out.println("interstingCell: " + mostInterestingColorGridCell);
-        travelToCell(1, positionBot1, mostInterestingColorGridCell);
-//        System.out.println("player0" + positionBot1);
-      }
     }
   }
   
   private void listenForColorChange() {
     ColorChange colorChange;
     while ((colorChange = networkClient.pullNextColorChange()) != null) {
-      updateMyBotPosition(colorChange);
+      updateMyBotsPosition(colorChange);
       // TODO implement
 //      updateColorGrid();
     }
@@ -77,20 +73,20 @@ public class Client{
 //    moveBot(2, Direction.getRandom());
   }
   
-  private void updateMyBotPosition(ColorChange colorChange) {
+  private void updateMyBotsPosition(ColorChange colorChange) {
     if (colorChange.player == player) {
       switch (colorChange.bot) {
       case 0:
-        positionBot0.x = colorChange.x;
-        positionBot0.y = colorChange.y;
+        positionBot0.setX(colorChange.x);
+        positionBot0.setY(colorChange.y);
         break;
       case 1:
-        positionBot1.x = colorChange.x;
-        positionBot1.y = colorChange.y;
+        positionBot1.setX(colorChange.x);
+        positionBot1.setY(colorChange.y);
         break;
       case 2:
-        positionBot2.x = colorChange.x;
-        positionBot2.y = colorChange.y;
+        positionBot2.setX(colorChange.x);
+        positionBot2.setY(colorChange.y);
         break;
       default:
         break;
@@ -98,39 +94,6 @@ public class Client{
     }
   }
   
-  private void travelToCell(int bot, Point currentPosition,  int targetVertex) {
-    int gridIndex = mapCordinatesToGridIndex(currentPosition.x, currentPosition.y);
-//    System.out.printf("bot: %s,       -        grid index: %s", bot, gridIndex);System.out.println();
-    List<Integer> path = floydWarshall.reconstructPath(gridIndex, targetVertex);
-    System.out.printf("travelling from %s to %s via %s", gridIndex, targetVertex, path);System.out.println();
-    if (path.size() > 1) {
-//      System.out.printf("travelling along: %S", path);System.out.println();
-      Direction nextDirection = getDirectionforSuccessiveVertex(path.get(0), path.get(1));
-//      System.out.println("nextDrection: " + nextDirection);
-      moveBot(bot, nextDirection);
-    }
-  }
-  
-  private Direction getDirectionforSuccessiveVertex(int a, int b) {
-    //TODO change hardcoded Top, Bottom width
-    Direction result = null;
-    switch (a-b) {
-    case -32:
-      result = Direction.Bottom;
-      break;
-    case 32:
-      result = Direction.Top;
-      break;
-    case -1:
-      result = Direction.Right;
-      break;
-    case 1:
-      result = Direction.Left;
-      break;
-    }
-    return result;
-  }
-
   /**
    * Generates a grid of the pitch
    * Each grid cell's booleans indicates whether one of the containing pixels is not walkable 
@@ -141,20 +104,11 @@ public class Client{
     Arrays.fill(grid, Boolean.TRUE);
     for (int y = 0; y < HEIGHT; y++) {
       for (int x = 0; x < WIDTH; x++) {
-        int gridIndex = mapCordinatesToGridIndex(x, y);
+        int gridIndex = GameUtils.mapCordinatesToGridIndex(x, y, GRID_KERNEL_LENGTH, GRID_WIDTH);
         if (!isWalkable(x, y)) grid[gridIndex] = false;
       }
     }
     return grid;
-  }
-  
-  /**
-   * Maps pixelCoordinates to gridIndex
-   */
-  private int mapCordinatesToGridIndex(int x, int y) {
-    int gridX = x / GRID_KERNEL_LENGTH;
-    int gridY = y / GRID_KERNEL_LENGTH;
-    return gridY * GRID_WIDTH + gridX;
   }
   
   private void moveBot(int bot, Direction direction) {
@@ -199,17 +153,64 @@ public class Client{
 }
 
 
-//final class BotScheduler implements Runnable {
-//  
-//  private NetworkClient networkClient;
-//  
-//  public BotScheduler(NetworkClient networkClient) {
-//    this.networkClient = networkClient;
-//  }
-//  
-//  @Override
-//  public void run() {
-//    new Client(this.clientName);
-//  }
-//  
-//}
+final class BotScheduler implements Runnable {
+  
+  private NetworkClient networkClient;
+  private volatile Coordinate botPosition;
+  private ColorGrid colorGrid;
+  private FloydWarshall floydWarshall;
+  private int gridKernelLength;
+  private int gridWidth;
+  
+  private int count = 0;
+  
+  public BotScheduler(NetworkClient networkClient, FloydWarshall floydWarshall, ColorGrid colorGrid, Coordinate botPosition, int gridKernelLength, int gridWidth) {
+    this.networkClient = networkClient;
+    this.floydWarshall = floydWarshall;
+    this.colorGrid = colorGrid;
+    this.botPosition = botPosition; 
+    this.gridKernelLength = gridKernelLength;
+    this.gridWidth = gridWidth;
+  }
+  
+  @Override
+  public void run() {
+    int mostInterestingColorGridCell = colorGrid.getMostInterestingColorGridCell();
+    start(mostInterestingColorGridCell);
+  }
+  
+  private synchronized void start(int mostInterestingColorGridCell) {
+    while(true) {
+    //if (count % 4 == 0) mostInterestingColorGridCell = colorGrid.getRandomCell();
+      System.out.println("botScheduler: " + botPosition);
+      System.out.printf("most intersting cell: %s", mostInterestingColorGridCell);System.out.println();
+      travelToCell(1, botPosition, mostInterestingColorGridCell);
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      count++;
+    }
+  }
+  
+  private void travelToCell(int bot, Coordinate currentPosition,  int targetVertex) {
+    int gridIndex = GameUtils.mapCordinatesToGridIndex(currentPosition.getX(), currentPosition.getY(), gridKernelLength, gridWidth);
+    System.out.printf("bot: %s,       -        grid index: %s", bot, gridIndex);System.out.println();
+    List<Integer> path = floydWarshall.reconstructPath(gridIndex, targetVertex);
+    System.out.printf("travelling from %s to %s via %s", gridIndex, targetVertex, path);System.out.println();
+    if (path.size() > 1) {
+//      System.out.printf("travelling along: %S", path);System.out.println();
+      Direction nextDirection = GameUtils.getDirectionforSuccessiveVertex(path.get(0), path.get(1));
+//      System.out.println("nextDrection: " + nextDirection);
+      moveBot(bot, nextDirection);
+    } else {
+      moveBot(bot, Direction.getRandom());
+    }
+  }
+  
+  private void moveBot(int bot, Direction direction) {
+    networkClient.setMoveDirection(bot, direction.getValue().x, direction.getValue().y);
+  }
+  
+}

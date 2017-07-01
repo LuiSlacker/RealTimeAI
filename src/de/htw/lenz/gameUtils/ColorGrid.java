@@ -45,7 +45,7 @@ public class ColorGrid {
   }
   
   public boolean isSurroundedByBlankCells(int x, int y) {
-    if (x < 1 || y < 1) return false;
+    if (x < 1 || y < 1 || x > (gridKernelLength-2) || y > (gridKernelLength-2)) return false;
     return colorGrid[x-1][y].getColorValue() == 261120
         && colorGrid[x+1][y].getColorValue() == 261120
         && colorGrid[x][y-1].getColorValue() == 261120
@@ -55,7 +55,7 @@ public class ColorGrid {
   public int getRandomCell() {
     int x = (int) (Math.random() * gridWidth);
     int y = (int) (Math.random() * gridWidth);
-    while(colorGrid[x][y].getColorValue() == 0) {
+    while(colorGrid[x][y].getColorValue() != gridKernelLength * gridKernelLength * 255 && !isSurroundedByBlankCells(x, y)) {
       x = (int) (Math.random() * gridWidth);
       y = (int) (Math.random() * gridWidth);
     }

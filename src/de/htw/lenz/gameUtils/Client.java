@@ -50,7 +50,7 @@ public class Client{
     triggerInitialBotsMove();
     while(true) {
       listenForColorChange();
-      int mostInterestingColorGridCell = colorGrid.getMostInterestingColorGridCell();
+      int mostInterestingColorGridCell = colorGrid.getRandomCell();
 //      int mostInterestingColorGridCell = 110;
       if (player == 0) {
 //        System.out.println("interstingCell: " + mostInterestingColorGridCell);

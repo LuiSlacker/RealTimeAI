@@ -23,7 +23,6 @@ public class ColorGridCell {
   }
   
   public void updateColorGridCell() {
-    long start = System.currentTimeMillis();
     colorValue = 0;
     for (int i = y * gridKernelLength; i < (y * gridKernelLength) + gridKernelLength; i++) {
       for (int j = x * gridKernelLength; j < (x * gridKernelLength) + gridKernelLength; j++) {

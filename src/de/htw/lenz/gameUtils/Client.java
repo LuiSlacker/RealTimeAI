@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.Arrays;
 
 import de.htw.lenz.main.BotScheduler;
+import de.htw.lenz.main.BrushScheduler;
 import de.htw.lenz.main.FloydWarshall;
 import lenz.htw.kipifub.ColorChange;
 import lenz.htw.kipifub.net.NetworkClient;
@@ -22,6 +23,8 @@ public class Client{
   private volatile Point positionBot0;
   private volatile Point positionBot1;
   private volatile Point positionBot2;
+  
+  private boolean[] booleanCellGrid;
 //  private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
   public Client(String name, String host) {
@@ -29,8 +32,8 @@ public class Client{
       networkClient = new NetworkClient(host, name);
       player = networkClient.getMyPlayerNumber();
       
-      boolean[] grid = generateGrid();
-      floydWarshall = new FloydWarshall(grid, GRID_WIDTH);
+      booleanCellGrid = generateGrid();
+      floydWarshall = new FloydWarshall(booleanCellGrid, GRID_WIDTH);
       
       colorGrid = new ColorGrid(networkClient, player, GRID_KERNEL_LENGTH, GRID_WIDTH);
       
@@ -49,7 +52,7 @@ public class Client{
     bot0.start();
     Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 1, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
     bot1.start();
-    Thread bot2 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 2, positionBot2, GRID_KERNEL_LENGTH, GRID_WIDTH));
+    Thread bot2 = new Thread(new BrushScheduler(networkClient, 2, positionBot2, GRID_KERNEL_LENGTH, GRID_WIDTH, booleanCellGrid));
     bot2.start();
     while(true) {
       listenForColorChange();
@@ -60,8 +63,9 @@ public class Client{
     ColorChange colorChange;
     while ((colorChange = networkClient.pullNextColorChange()) != null) {
       updateMyBotsPosition(colorChange);
-      // TODO implement
-//      updateColorGrid();
+      int cellX = colorChange.x / GRID_KERNEL_LENGTH;
+      int cellY = colorChange.y / GRID_KERNEL_LENGTH;
+      colorGrid.updatedColorGridCell(cellX, cellY);
     }
   }
   

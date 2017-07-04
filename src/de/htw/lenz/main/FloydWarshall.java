@@ -103,7 +103,7 @@ public class FloydWarshall {
    */
   private boolean isNeighbor(int a, int b) {
     boolean walkable = vertices[a] && vertices[b]; 
-    return walkable && (isInSameRow(a, b) && Math.abs(a-b) == 1 || Math.abs(a-b) == verticesPerRow);
+    return walkable && ((isInSameRow(a, b) && Math.abs(a-b) == 1 ) || Math.abs(a-b) == verticesPerRow);
   }
   
   /**

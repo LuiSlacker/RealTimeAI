@@ -1,9 +1,9 @@
 package de.htw.lenz.main;
 
+import java.awt.Point;
 import java.util.List;
 
 import de.htw.lenz.gameUtils.ColorGrid;
-import de.htw.lenz.gameUtils.Coordinate;
 import de.htw.lenz.gameUtils.Direction;
 import de.htw.lenz.gameUtils.GameUtils;
 import lenz.htw.kipifub.net.NetworkClient;
@@ -13,19 +13,21 @@ public class BotScheduler implements Runnable{
   private static int TARGET_CELL_UPDATE = 8;
   private static int THREAD_SLEEP = 500;
   private NetworkClient networkClient;
-  public volatile Coordinate botPosition;
+  public volatile Point botPosition;
   private ColorGrid colorGrid;
   private FloydWarshall floydWarshall;
   private int gridKernelLength;
   private int gridWidth;
   
   private int count = 0;
+  private int bot;
   
-  public BotScheduler(NetworkClient networkClient, FloydWarshall floydWarshall, ColorGrid colorGrid, Coordinate botPosition, int gridKernelLength, int gridWidth) {
+  public BotScheduler(NetworkClient networkClient, FloydWarshall floydWarshall, ColorGrid colorGrid, int bot, Point botPosition, int gridKernelLength, int gridWidth) {
     this.networkClient = networkClient;
     this.floydWarshall = floydWarshall;
     this.colorGrid = colorGrid;
     this.botPosition = botPosition; 
+    this.bot = bot;
     this.gridKernelLength = gridKernelLength;
     this.gridWidth = gridWidth;
   }
@@ -41,7 +43,7 @@ public class BotScheduler implements Runnable{
     if (count % TARGET_CELL_UPDATE == 0) mostInterestingColorGridCell = colorGrid.getRandomCell();
       System.out.println("botScheduler: " + botPosition);
       System.out.printf("most intersting cell: %s", mostInterestingColorGridCell);System.out.println();
-      travelToCell(1, botPosition, mostInterestingColorGridCell);
+      travelToCell(bot, botPosition, mostInterestingColorGridCell);
       try {
         Thread.sleep(THREAD_SLEEP);
       } catch (InterruptedException e) {
@@ -51,8 +53,8 @@ public class BotScheduler implements Runnable{
     }
   }
   
-  private void travelToCell(int bot, Coordinate currentPosition,  int targetVertex) {
-    int gridIndex = GameUtils.mapCordinatesToGridIndex(currentPosition.getX(), currentPosition.getY(), gridKernelLength, gridWidth);
+  private void travelToCell(int bot, Point currentPosition,  int targetVertex) {
+    int gridIndex = GameUtils.mapCordinatesToGridIndex(currentPosition.x, currentPosition.y, gridKernelLength, gridWidth);
     System.out.printf("bot: %s,       -        grid index: %s", bot, gridIndex);System.out.println();
     List<Integer> path = floydWarshall.reconstructPath(gridIndex, targetVertex);
     System.out.printf("travelling from %s to %s via %s", gridIndex, targetVertex, path);System.out.println();

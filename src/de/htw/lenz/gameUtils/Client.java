@@ -1,5 +1,6 @@
 package de.htw.lenz.gameUtils;
 
+import java.awt.Point;
 import java.util.Arrays;
 
 import de.htw.lenz.main.BotScheduler;
@@ -18,9 +19,9 @@ public class Client{
   private FloydWarshall floydWarshall;
   private ColorGrid colorGrid;
   private int player;
-  static private volatile Coordinate positionBot0;
-  static private volatile Coordinate positionBot1;
-  static private volatile Coordinate positionBot2;
+  private volatile Point positionBot0;
+  private volatile Point positionBot1;
+  private volatile Point positionBot2;
 //  private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
   public Client(String name, String host) {
@@ -33,9 +34,9 @@ public class Client{
       
       colorGrid = new ColorGrid(networkClient, player, GRID_KERNEL_LENGTH, GRID_WIDTH);
       
-      positionBot0 = new Coordinate(-1, -1);
-      positionBot1 = new Coordinate(-1, -1);
-      positionBot2 = new Coordinate(-1, -1);
+      positionBot0 = new Point(-1, -1);
+      positionBot1 = new Point(-1, -1);
+      positionBot2 = new Point(-1, -1);
       
       start();
     } catch (Exception e) {
@@ -44,9 +45,12 @@ public class Client{
   }
   
   private void start() {
-    triggerInitialBotsMove();
-    Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
+    Thread bot0 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 0, positionBot0, GRID_KERNEL_LENGTH, GRID_WIDTH));
+    bot0.start();
+    Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 1, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
     bot1.start();
+    Thread bot2 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 2, positionBot2, GRID_KERNEL_LENGTH, GRID_WIDTH));
+    bot2.start();
     while(true) {
       listenForColorChange();
     }
@@ -61,28 +65,20 @@ public class Client{
     }
   }
   
-  private void triggerInitialBotsMove() {
-//    moveBot(0, Direction.getRandom());
-    if (player == 0) {
-      moveBot(1, Direction.Right);
-    }
-//    moveBot(2, Direction.getRandom());
-  }
-  
   private void updateMyBotsPosition(ColorChange colorChange) {
     if (colorChange.player == player) {
       switch (colorChange.bot) {
       case 0:
-        positionBot0.setX(colorChange.x);
-        positionBot0.setY(colorChange.y);
+        positionBot0.x = colorChange.x;
+        positionBot0.y = colorChange.y;
         break;
       case 1:
-        positionBot1.setX(colorChange.x);
-        positionBot1.setY(colorChange.y);
+        positionBot1.x = colorChange.x;
+        positionBot1.y = colorChange.y;
         break;
       case 2:
-        positionBot2.setX(colorChange.x);
-        positionBot2.setY(colorChange.y);
+        positionBot2.x = colorChange.x;
+        positionBot2.y = colorChange.y;
         break;
       default:
         break;

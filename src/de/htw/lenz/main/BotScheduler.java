@@ -10,7 +10,7 @@ import lenz.htw.kipifub.net.NetworkClient;
 
 public class BotScheduler implements Runnable{
 
-  private static int TARGET_CELL_UPDATE = 8;
+  private static int TARGET_CELL_UPDATE = 4;
   private static int THREAD_SLEEP = 500;
   private NetworkClient networkClient;
   public volatile Point botPosition;
@@ -40,7 +40,7 @@ public class BotScheduler implements Runnable{
   
   private void start(int mostInterestingColorGridCell) {
     while(true) {
-    if (count % TARGET_CELL_UPDATE == 0) mostInterestingColorGridCell = colorGrid.getRandomCell();
+    if (count % (TARGET_CELL_UPDATE + bot * 4) == 0) mostInterestingColorGridCell = colorGrid.getRandomCell();
       System.out.println("botScheduler: " + botPosition);
       System.out.printf("most intersting cell: %s", mostInterestingColorGridCell);System.out.println();
       travelToCell(bot, botPosition, mostInterestingColorGridCell);
@@ -59,9 +59,7 @@ public class BotScheduler implements Runnable{
     List<Integer> path = floydWarshall.reconstructPath(gridIndex, targetVertex);
     System.out.printf("travelling from %s to %s via %s", gridIndex, targetVertex, path);System.out.println();
     if (path.size() > 1) {
-//      System.out.printf("travelling along: %S", path);System.out.println();
       Direction nextDirection = GameUtils.getDirectionforSuccessiveVertex(path.get(0), path.get(1));
-//      System.out.println("nextDrection: " + nextDirection);
       moveBot(bot, nextDirection);
     } else {
       moveBot(bot, Direction.getRandom());

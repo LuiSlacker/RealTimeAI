@@ -103,10 +103,6 @@ public class Client{
     return grid;
   }
   
-  private void moveBot(int bot, Direction direction) {
-    networkClient.setMoveDirection(bot, direction.getValue().x, direction.getValue().y);
-  }
-  
   private boolean isWalkable(int x, int y) {
     return networkClient.isWalkable(x, y);
   }

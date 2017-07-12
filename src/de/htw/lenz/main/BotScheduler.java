@@ -10,7 +10,7 @@ import lenz.htw.kipifub.net.NetworkClient;
 
 public class BotScheduler extends MainBotScheduler implements Runnable{
 
-  private static int TARGET_CELL_UPDATE = 4;
+  private static int TARGET_CELL_UPDATE = 2;
   private static int THREAD_SLEEP = 500;
   public volatile Point botPosition;
   private ColorGrid colorGrid;

@@ -2,23 +2,23 @@ package de.htw.lenz.main;
 
 import java.awt.Point;
 
-import de.htw.lenz.gameUtils.BrushBotDirections;
+import de.htw.lenz.gameUtils.BrushBotDirectionsBottom;
+import de.htw.lenz.gameUtils.BrushBotDirectionsTop;
 import de.htw.lenz.gameUtils.Direction;
 import de.htw.lenz.gameUtils.GameUtils;
 import lenz.htw.kipifub.net.NetworkClient;
 
 public class BrushScheduler extends MainBotScheduler implements Runnable{
 
-  private int threadSleep = 700;
+  private int threadSleep = 950;
   
   private int bot;
-  public volatile Point botPosition;
-
+  private volatile Point botPosition;
   private int gridKernelLength;
-
   private int gridWidth;
-
   private boolean[] booleanCellGrid;
+  private boolean isTurn = false;
+  private int oldCellIndex = -1;
   
   public BrushScheduler(NetworkClient networkClient, int bot, Point botPosition, int gridKernelLength, int gridWidth, boolean[] booleanCellGrid) {
     super(networkClient);
@@ -30,16 +30,22 @@ public class BrushScheduler extends MainBotScheduler implements Runnable{
   }
   @Override
   public void run() {
-    moveBot(bot, Direction.Left);
+    moveBot(bot, Direction.getRandom());
+    int cellIndex;
     while(true) {
-      int cellIndex = GameUtils.mapCordinatesToGridIndex(botPosition.x, botPosition.y, gridKernelLength, gridWidth);
-      if (!booleanCellGrid[cellIndex]) {
-        if (cellIndex > (gridWidth-4) * gridWidth) {
-          moveBot(bot, BrushBotDirections.nextDirectionToTop());
-        } else {
-          moveBot(bot, BrushBotDirections.nextDirectionToBottom());
+      cellIndex = GameUtils.mapCordinatesToGridIndex(botPosition.x, botPosition.y, gridKernelLength, gridWidth);
+      if (cellIndex == oldCellIndex) {
+        moveBot(bot, getNextDirection(cellIndex));
+      } else if (isTurn) {
+        moveBot(bot, getNextDirection(cellIndex));
+        isTurn = false;
+      } else {
+        if (!booleanCellGrid[cellIndex]) { // brush within (or surrounded by) gridCell with non-walkable pixels
+          isTurn = true;
+          moveBot(bot, getNextDirection(cellIndex));
         }
-      };
+      }
+      oldCellIndex = cellIndex;
       try {
         Thread.sleep(threadSleep);
       } catch (InterruptedException e) {
@@ -48,6 +54,9 @@ public class BrushScheduler extends MainBotScheduler implements Runnable{
     }
   }
   
+  private Direction getNextDirection(int cellIndex) {
+    return (cellIndex > ((gridWidth-4) * gridWidth)) ? BrushBotDirectionsTop.next(): BrushBotDirectionsBottom.next(); 
+  }
   
 
 }

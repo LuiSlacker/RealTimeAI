@@ -48,14 +48,22 @@ public class Client{
   }
   
   private void start() {
-    Thread bot0 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 0, positionBot0, GRID_KERNEL_LENGTH, GRID_WIDTH));
-    bot0.start();
-    Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 1, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
-    bot1.start();
-    Thread bot2 = new Thread(new BrushScheduler(networkClient, 2, positionBot2, GRID_KERNEL_LENGTH, GRID_WIDTH, booleanCellGrid));
-    bot2.start();
+    if (player == 2 || player == 0 || player == 1) {
+      Thread bot0 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 0, positionBot0, GRID_KERNEL_LENGTH, GRID_WIDTH));
+      bot0.start();
+      Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 1, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
+      bot1.start();
+      Thread bot2 = new Thread(new BrushScheduler(networkClient, 2, positionBot2, GRID_KERNEL_LENGTH, GRID_WIDTH, booleanCellGrid));
+      bot2.start();
+    }
     while(true) {
       listenForColorChange();
+//      if (player == 1) {
+//        Direction dir = Direction.getRandom();
+//        networkClient.setMoveDirection(0, dir.getValue().x, dir.getValue().y);
+//        networkClient.setMoveDirection(1, dir.getValue().x, dir.getValue().y);
+//        networkClient.setMoveDirection(2, dir.getValue().x, dir.getValue().y);
+//      }
     }
   }
   

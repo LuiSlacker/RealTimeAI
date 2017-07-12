@@ -34,7 +34,7 @@ public class ColorGrid {
     int maxValue = Integer.MIN_VALUE; 
     for (int j = 0; j < colorGrid.length; j++) {
       for (int i = 0; i < colorGrid.length; i++) {
-        if (colorGrid[i][j].getColorValue() > maxValue) {// && isSurroundedByBlankCells(i, j)) {
+        if (colorGrid[i][j].getColorValue() > maxValue) {
           maxValue = colorGrid[i][j].getColorValue();
           mostInterstingCell = j * gridWidth + i;
         }

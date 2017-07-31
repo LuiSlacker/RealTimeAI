@@ -1,4 +1,4 @@
-package de.htw.lenz.main;
+package de.htw.lenz.AI;
 
 import java.awt.Point;
 import java.util.List;
@@ -39,11 +39,9 @@ public class BotScheduler extends MainBotScheduler implements Runnable{
   
   private void start(int mostInterestingColorGridCell) {
     while(true) {
-      if (count % (TARGET_CELL_UPDATE + bot * 4) == 0) {
+      if (count % (TARGET_CELL_UPDATE + bot * 2) == 0) {
         mostInterestingColorGridCell = colorGrid.getMostInterestingColorGridCell();
-//        System.out.printf("most intersting cell: %s", mostInterestingColorGridCell);System.out.println();
       }
-//      System.out.println("botScheduler: " + botPosition);
       travelToCell(bot, botPosition, mostInterestingColorGridCell);
       try {
         Thread.sleep(THREAD_SLEEP);
@@ -56,9 +54,7 @@ public class BotScheduler extends MainBotScheduler implements Runnable{
   
   private void travelToCell(int bot, Point currentPosition,  int targetVertex) {
     int gridIndex = GameUtils.mapCordinatesToGridIndex(currentPosition.x, currentPosition.y, gridKernelLength, gridWidth);
-    System.out.printf("bot: %s,       -        grid index: %s", bot, gridIndex);System.out.println();
     List<Integer> path = floydWarshall.reconstructPath(gridIndex, targetVertex);
-    System.out.printf("travelling from %s to %s via %s", gridIndex, targetVertex, path);System.out.println();
     if (path.size() > 1) {
       Direction nextDirection = GameUtils.getDirectionforSuccessiveVertex(path.get(0), path.get(1));
       moveBot(bot, nextDirection);

@@ -1,4 +1,4 @@
-package de.htw.lenz.main;
+package de.htw.lenz.AI;
 
 import java.awt.Point;
 

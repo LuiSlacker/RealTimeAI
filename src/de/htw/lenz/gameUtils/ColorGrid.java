@@ -1,6 +1,7 @@
 package de.htw.lenz.gameUtils;
 
-import de.htw.lenz.main.Utils;
+import java.util.Arrays;
+
 import lenz.htw.kipifub.net.NetworkClient;
 
 public class ColorGrid {
@@ -18,7 +19,7 @@ public class ColorGrid {
     this.gridWidth = gridWidth;
     colorGrid = new ColorGridCell[gridWidth][gridWidth];
     initializeGrid();
-    Utils.printColorGrid(colorGrid);
+//    Utils.printColorGrid(colorGrid);
   }
 
   private void initializeGrid() {
@@ -63,6 +64,32 @@ public class ColorGrid {
   
   public void updatedColorGridCell(int x, int y) {
     colorGrid[x][y].updateColorGridCell();
+  }
+  
+  public int getRandomBestCell() {
+    ColorGridCell[] sortedArray = sortFlattenedArray();
+    int randomBestIndex = (int) (Math.random() * 4);
+    return sortedArray[randomBestIndex].getIndex();
+  }
+  
+  private ColorGridCell[] sortFlattenedArray() {
+    ColorGridCell[] flattenedArray = flattenColorGrid();
+    Arrays.sort(flattenedArray);
+    return flattenedArray;
+  }
+  
+  /**
+   * flattens the 2d ColorGrid
+   */
+  private ColorGridCell[] flattenColorGrid() {
+    ColorGridCell[] flatteneColordGrid = new ColorGridCell[gridWidth * gridWidth];
+    for (int j = 0; j < colorGrid.length; j++) {
+      for (int i = 0; i < colorGrid.length; i++) {
+        int pos = j * gridWidth + i;
+        flatteneColordGrid[pos] = colorGrid[i][j];
+      }
+    }
+    return flatteneColordGrid;
   }
   
 

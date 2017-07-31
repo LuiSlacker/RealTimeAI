@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import lenz.htw.kipifub.net.NetworkClient;
 
-public class ColorGridCell {
+public class ColorGridCell implements Comparable<ColorGridCell> {
   
   private NetworkClient networkClient;
   private int colorValue;
@@ -22,6 +22,10 @@ public class ColorGridCell {
     updateColorGridCell();
   }
   
+  
+  /**
+   * Updates the game-specific value for one ColorGridCell
+   */
   public void updateColorGridCell() {
     colorValue = 0;
     for (int i = y * gridKernelLength; i < (y * gridKernelLength) + gridKernelLength; i++) {
@@ -36,6 +40,9 @@ public class ColorGridCell {
     }
   }
   
+  /**
+   * Extract a game-specific color value out of a given RGB-color value
+   */
   private int extractColorValue(int color) {
     int[] rgb = {color & 255, (color >> 8) & 255, (color >> 16) & 255};
     int myColorValue = rgb[player];
@@ -50,6 +57,15 @@ public class ColorGridCell {
   
   public int getColorValue() {
     return colorValue;
+  }
+  
+  public int getIndex() {
+    return y * gridKernelLength + x;
+  }
+
+  @Override
+  public int compareTo(ColorGridCell that) {
+    return Integer.compare(this.colorValue, that.colorValue);
   }
   
 

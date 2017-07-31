@@ -3,9 +3,9 @@ package de.htw.lenz.gameUtils;
 import java.awt.Point;
 import java.util.Arrays;
 
-import de.htw.lenz.main.BotScheduler;
-import de.htw.lenz.main.BrushScheduler;
-import de.htw.lenz.main.FloydWarshall;
+import de.htw.lenz.AI.BotScheduler;
+import de.htw.lenz.AI.BrushScheduler;
+import de.htw.lenz.AI.FloydWarshall;
 import lenz.htw.kipifub.ColorChange;
 import lenz.htw.kipifub.net.NetworkClient;
 
@@ -25,7 +25,6 @@ public class Client{
   private volatile Point positionBot2;
   
   private boolean[] booleanCellGrid;
-//  private int[][][] pixels = new int[WIDTH][HEIGHT][4];
 
   public Client(String name, String host) {
     try {
@@ -48,22 +47,14 @@ public class Client{
   }
   
   private void start() {
-    if (player == 2 || player == 0 || player == 1) {
       Thread bot0 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 0, positionBot0, GRID_KERNEL_LENGTH, GRID_WIDTH));
       bot0.start();
       Thread bot1 = new Thread(new BotScheduler(networkClient, floydWarshall, colorGrid, 1, positionBot1, GRID_KERNEL_LENGTH, GRID_WIDTH));
       bot1.start();
       Thread bot2 = new Thread(new BrushScheduler(networkClient, 2, positionBot2, GRID_KERNEL_LENGTH, GRID_WIDTH, booleanCellGrid));
       bot2.start();
-    }
     while(true) {
       listenForColorChange();
-//      if (player == 1) {
-//        Direction dir = Direction.getRandom();
-//        networkClient.setMoveDirection(0, dir.getValue().x, dir.getValue().y);
-//        networkClient.setMoveDirection(1, dir.getValue().x, dir.getValue().y);
-//        networkClient.setMoveDirection(2, dir.getValue().x, dir.getValue().y);
-//      }
     }
   }
   
@@ -118,37 +109,6 @@ public class Client{
   private boolean isWalkable(int x, int y) {
     return networkClient.isWalkable(x, y);
   }
-  
-  private long getScoreForPlayer(int player) {
-    return networkClient.getScore(player);
-  }
-  
-//  private void drawImage() {
-//    EventQueue.invokeLater(new Runnable() {
-//      public void run() {
-//        JFrame f = new JFrame();
-//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        JFrame.setDefaultLookAndFeelDecorated(true);
-//        f.setResizable(false);
-//        ImagePanel vP = new ImagePanel(pixels);
-//        f.add(vP, BorderLayout.CENTER);
-//        f.pack();
-//        f.setVisible(true);
-//      }
-//    });
-//  }
-//
-//  private void generateImage() {
-//    for (int y = 0; y < HEIGHT; y++) {
-//      for (int x = 0; x < WIDTH; x++) {
-//        int rgb = networkClient.getBoard(x, y);
-//        int b = rgb & 255;
-//        int g = (rgb >> 8) & 255;
-//        int r = (rgb >> 16) & 255;
-//        pixels[x][y] = new int[]{r, g, b, 255};
-//      }
-//    }
-//  }
   
 }
 

@@ -1,4 +1,4 @@
-package de.htw.lenz.main;
+package de.htw.lenz.AI;
 
 import de.htw.lenz.gameUtils.Direction;
 import lenz.htw.kipifub.net.NetworkClient;

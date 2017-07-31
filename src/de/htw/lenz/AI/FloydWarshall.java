@@ -1,4 +1,4 @@
-package de.htw.lenz.main;
+package de.htw.lenz.AI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +66,11 @@ public class FloydWarshall {
     }
   }
   
+  
+  /**
+   * calculates the shortest path between all edges of a graph
+   * and updates the pointer matrix for reconstruction
+   */
   private void allPairsShortestPath() {
     distances = Arrays.copyOf(adjacencyMatrix, n);
     
@@ -82,7 +87,7 @@ public class FloydWarshall {
   }
   
   /**
-   * reconstruct the shortest path from vertex u to v
+   * reconstructs the shortest path from vertex u to v
    * @param u starting vertex
    * @param v target vertex
    * @return the shortest path from u to v
